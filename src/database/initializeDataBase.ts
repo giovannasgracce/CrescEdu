@@ -10,5 +10,16 @@ export async function initializeDataBase(dataBase: SQLiteDatabase){
             email text not null,
             senha text not null
         );
-    `)
+    `);
+    await dataBase.execAsync(`
+    CREATE TABLE IF NOT EXISTS calendario (
+      id integer primary key autoincrement,
+      data text not null,
+      titulo text not null,
+      descricao text not null,
+      prioridade text not null
+    );
+  `);
+
+
 }

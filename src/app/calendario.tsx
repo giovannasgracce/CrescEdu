@@ -8,23 +8,49 @@ import {
 	TextInput,
 	ScrollView,
 } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 import { Calendar } from "react-native-calendars";
 
 export default function CalendarScreen() {
 	const [selectedDate, setSelectedDate] = useState("");
 	const [events, setEvents] = useState({});
-	const [newEvent, setNewEvent] = useState("");
+	const [titulo, setTitulo] = useState("");
+	const [descricao, setDescricao] = useState("");
+	const [prioridade, setPrioridade] = useState("");
 	const rota = useRouter();
 
 	const addEvent = () => {
-		if (selectedDate && newEvent.trim() !== "") {
+		if (selectedDate && titulo.trim() !== "") {
+			const novoEvento = {
+				titulo: titulo.trim(),
+				descricao: descricao.trim(),
+				prioridade: prioridade.trim(),
+			};
+
 			setEvents((prev) => {
 				const updated = { ...prev };
 				if (!updated[selectedDate]) updated[selectedDate] = [];
-				updated[selectedDate].push(newEvent.trim());
+				updated[selectedDate].push(novoEvento);
 				return updated;
 			});
-			setNewEvent("");
+
+			// Limpar campos
+			setTitulo("");
+			setDescricao("");
+			setPrioridade("");
+		}
+	};
+
+	const getPriorityStyle = (prioridade) => {
+		switch (prioridade) {
+			case "Alta":
+				return { backgroundColor: "#ffe5e5" };
+			case "Média":
+				return { backgroundColor: "#fff3cd" };
+			case "Baixa":
+				return { backgroundColor: "#d4edda" };
+			default:
+				return { backgroundColor: "#f0f8ff" };
 		}
 	};
 
@@ -56,17 +82,32 @@ export default function CalendarScreen() {
 			</Text>
 
 			{selectedDate && (
-				<View style={styles.inputContainer}>
+				<View style={styles.formContainer}>
 					<TextInput
 						style={styles.input}
-						placeholder="Digite um compromisso"
-						value={newEvent}
-						onChangeText={setNewEvent}
+						placeholder="Título"
+						value={titulo}
+						onChangeText={setTitulo}
 					/>
-					<TouchableOpacity
-						style={styles.addButton}
-						onPress={addEvent}
-					>
+					<TextInput
+						style={styles.input}
+						placeholder="Descrição"
+						value={descricao}
+						onChangeText={setDescricao}
+					/>
+					<View style={styles.pickerContainer}>
+						<Picker
+							selectedValue={prioridade}
+							onValueChange={(itemValue) => setPrioridade(itemValue)}
+							style={styles.picker}
+						>
+							<Picker.Item label="Selecione a prioridade" value="" />
+							<Picker.Item label="Alta" value="Alta" />
+							<Picker.Item label="Média" value="Média" />
+							<Picker.Item label="Baixa" value="Baixa" />
+						</Picker>
+					</View>
+					<TouchableOpacity style={styles.addButton} onPress={addEvent}>
 						<Text style={styles.addButtonText}>Adicionar</Text>
 					</TouchableOpacity>
 				</View>
@@ -76,9 +117,11 @@ export default function CalendarScreen() {
 				<View style={styles.eventList}>
 					<Text style={styles.eventTitle}>Compromissos:</Text>
 					{events[selectedDate].map((item, index) => (
-						<Text key={index} style={styles.eventItem}>
-							• {item}
-						</Text>
+						<View key={index} style={[styles.eventItem, getPriorityStyle(item.prioridade)]}>
+							<Text style={{ fontWeight: "bold" }}>{item.titulo}</Text>
+							<Text>Descrição: {item.descricao}</Text>
+							<Text>Prioridade: {item.prioridade}</Text>
+						</View>
 					))}
 				</View>
 			)}
@@ -110,23 +153,22 @@ const styles = StyleSheet.create({
 		fontSize: 18,
 		textAlign: "center",
 	},
-	inputContainer: {
+	formContainer: {
 		marginTop: 20,
-		flexDirection: "row",
-		alignItems: "center",
+		gap: 10,
 	},
 	input: {
-		flex: 1,
 		borderWidth: 1,
 		borderColor: "#ccc",
 		borderRadius: 8,
 		padding: 10,
-		marginRight: 10,
+		marginBottom: 10,
 	},
 	addButton: {
 		backgroundColor: "#00adf5",
 		padding: 10,
 		borderRadius: 8,
+		alignItems: "center",
 	},
 	addButtonText: {
 		color: "#fff",
@@ -142,8 +184,9 @@ const styles = StyleSheet.create({
 	},
 	eventItem: {
 		fontSize: 16,
-		marginLeft: 10,
-		marginBottom: 5,
+		marginBottom: 15,
+		padding: 10,
+		borderRadius: 8,
 	},
 	button: {
 		backgroundColor: "#007AFF",
@@ -158,5 +201,16 @@ const styles = StyleSheet.create({
 		color: "#fff",
 		fontSize: 18,
 		fontWeight: "600",
+	},
+	pickerContainer: {
+		borderWidth: 1,
+		borderColor: "#ccc",
+		borderRadius: 8,
+		marginBottom: 10,
+		overflow: "hidden",
+	},
+	picker: {
+		height: 50,
+		width: "100%",
 	},
 });
