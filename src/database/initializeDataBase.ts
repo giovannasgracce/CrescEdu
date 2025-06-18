@@ -20,6 +20,13 @@ export async function initializeDataBase(dataBase: SQLiteDatabase){
       prioridade text not null
     );
   `);
-
-
+    await dataBase.execAsync(`
+      CREATE TABLE IF NOT EXISTS chat (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        remetente TEXT NOT NULL,
+        destinatario TEXT NOT NULL,
+        mensagem TEXT NOT NULL,
+        dataHora TEXT NOT NULL
+      );
+    `);
 }

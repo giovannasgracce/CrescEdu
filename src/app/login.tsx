@@ -13,8 +13,6 @@ export default function Login() {
   const [senhaVisivel, setSenhaVisivel] = useState(false);
   const [loading, setLoading] = useState(false);
 
- 
-
   async function getLogin() {
     const emailLimpo = email.trim();
 
@@ -37,7 +35,6 @@ export default function Login() {
     try {
       setLoading(true);
 
-      // Aqui você pode modificar para buscar pelo CPF e email, dependendo da lógica do seu banco.
       const usuario = await pessoasDataBase.findByEmail(emailLimpo);
 
       if (!usuario) {
@@ -54,7 +51,12 @@ export default function Login() {
 
       setLoading(false);
       Alert.alert('Sucesso', 'Login realizado com sucesso!');
-      rota.push('/menu');
+
+      // 🚩 AQUI: Agora passando o email como usuarioAtual
+      rota.push({
+        pathname: '/menu',
+        params: { usuarioAtual: emailLimpo },
+      });
 
     } catch (error) {
       console.log(error);
@@ -66,7 +68,6 @@ export default function Login() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Bem-vindo</Text>
-
 
       <Text style={styles.label}>Email</Text>
       <TextInput

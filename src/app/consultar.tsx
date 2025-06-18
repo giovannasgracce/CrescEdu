@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import { Pessoas } from "@/components/Pessoas";
 import React, {useState, useEffect} from 'react';
-import { View,Text,Button, StyleSheet,TouchableOpacity,Alert, FlatList} from 'react-native';
+import { ScrollView,View,Text,Button, StyleSheet,TouchableOpacity,Alert, FlatList} from 'react-native';
 import { usePessoasDataBase, PessoasDataBase } from '../database/usePessoasDataBase';
 
 
@@ -43,20 +43,23 @@ export default function Cadastrar(){
     useEffect(() => {list()}, [busca] )
 
     return (
-        <View>
-			<Text>Pessoas cadastradas</Text>
-            <View>
-            <FlatList
+        <View style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={{ padding: 16 }}>
+          <Text>Pessoas cadastradas</Text>
+      
+          <FlatList
             data={pessoas}
             keyExtractor={(item) => String(item.id)}
             renderItem={({ item }) => <Pessoas data={item} />}
             contentContainerStyle={{ gap: 16 }}
-            />
-
-            </View>
-            <TouchableOpacity onPress={() => rota.push('/menu')}><Text>Voltar</Text></TouchableOpacity>
-        </View>
-
+            scrollEnabled={false} // para evitar conflito de scroll entre ScrollView e FlatList
+          />
+      
+          <TouchableOpacity onPress={() => rota.push('/menu')}>
+            <Text>Voltar</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </View>
 
     )
 }
